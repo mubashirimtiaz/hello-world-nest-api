@@ -61,4 +61,4 @@ jobs:
 
       - name: Force new Deployment
         run: |
-          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment
+          aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment
