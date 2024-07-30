@@ -57,3 +57,8 @@ jobs:
           task-definition: task-definition.json
           service: ${{ env.AWS_ECS_SERVICE }}
           cluster: ${{ env.AWS_ECS_CLUSTER }}
+
+
+      - name: Force new Deployment
+        run: |
+          aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment
