@@ -28,9 +28,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to Amazon ECR 
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      # - name: Login to Amazon ECR 
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -40,3 +40,16 @@ jobs:
           aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
           docker build -t $AWS_ECR/$AWS_REPOSITORY_NAME:$IMAGE_TAG .
           docker push $AWS_ECR/$AWS_REPOSITORY_NAME:$IMAGE_TAG
+          echo "::set-output name=image::${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG"
+      
+      - name: Download Task Definition
+        run: |
+          aws ecs describe-task-definition --task-definition  ${{ env.AWS_ECS_TASK }} \
+          --query taskDefinition > task-definition.json
+
+      - name: Update Task Definition
+        run: echo "`jq '.containerDefinitions[0].image="${{ steps.build-image.outputs.image }}"' task-definition.json`" > task-definition.json
+         
+        
+      - name: PRINT TASK DEFINITION
+        run: cat task-definition.json
